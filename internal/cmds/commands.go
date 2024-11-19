@@ -38,3 +38,15 @@ func (c *Commands) Run(state *State, cmd Command) error {
 
 	return nil
 }
+
+func Reset(s *State, cmd Command) error {
+	if err := ResetUsers(s, cmd); err != nil {
+		return err
+	}
+
+	if err := ResetFeeds(s, cmd); err != nil {
+		return err
+	}
+
+	return nil
+}

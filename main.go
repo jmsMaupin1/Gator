@@ -39,6 +39,8 @@ func main() {
 	commands.RegisterCommands("reset", cmds.Reset)
 	commands.RegisterCommands("users", cmds.Users)
 	commands.RegisterCommands("agg", cmds.Agg)
+	commands.RegisterCommands("addfeed", cmds.AddFeed)
+	commands.RegisterCommands("feeds", cmds.GetFeeds)
 
 	userInput := os.Args
 

@@ -51,7 +51,7 @@ func Register(s *State, cmd Command) error {
 	return Login(s, cmd)
 }
 
-func Reset(s *State, _ Command) error {
+func ResetUsers(s *State, _ Command) error {
 	if err := s.DB.DeleteUsers(context.Background()); err != nil {
 		return err
 	}
