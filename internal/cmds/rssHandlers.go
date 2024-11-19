@@ -102,7 +102,6 @@ func FollowFeed(s *State, cmd Command, user database.User) error {
 	return nil
 }
 
-
 func GetFollowsForCurrentUser(s *State, cmd Command, user database.User) error {
 	ctx := context.Background()
 
@@ -116,10 +115,28 @@ func GetFollowsForCurrentUser(s *State, cmd Command, user database.User) error {
 	return nil
 }
 
+func DeleteFeedFollowRecord(s *State, cmd Command, user database.User) error {
+	ctx := context.Background()
+
+	feed, err := s.DB.GetFeedByURL(ctx, cmd.Args[0])
+	if err != nil {
+		return err
+	}
+
+	if err := s.DB.DeleteFeedFollowRecord(ctx, database.DeleteFeedFollowRecordParams{
+		FeedID: feed.ID,
+		UserID: user.ID,
+	}); err != nil {
+		return nil
+	}
+
+	return nil
+}
+
 func ResetFeeds(s *State, cmd Command) error {
 	ctx := context.Background()
 	
-	if err := s.DB.DeleteFeedFollows(ctx); err != nil {
+	if err := s.DB.ResetFeedFollows(ctx); err != nil {
 		return err
 	}
 

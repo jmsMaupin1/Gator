@@ -55,6 +55,7 @@ func main() {
 	commands.RegisterCommands("addfeed", MiddlewareLoggedIn(cmds.AddFeed))
 	commands.RegisterCommands("follow", MiddlewareLoggedIn(cmds.FollowFeed))
 	commands.RegisterCommands("following", MiddlewareLoggedIn(cmds.GetFollowsForCurrentUser))
+	commands.RegisterCommands("unfollow", MiddlewareLoggedIn(cmds.DeleteFeedFollowRecord))
 
 	userInput := os.Args
 
