@@ -88,7 +88,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 
 const getUserByName = `-- name: GetUserByName :one
 SELECT id, created_at, updated_at, name FROM users 
-WHERE users.name = $1
+WHERE name = $1
 `
 
 func (q *Queries) GetUserByName(ctx context.Context, name string) (User, error) {

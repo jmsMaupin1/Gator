@@ -40,13 +40,13 @@ func (c *Commands) Run(state *State, cmd Command) error {
 }
 
 func Reset(s *State, cmd Command) error {
-	if err := ResetUsers(s, cmd); err != nil {
-		return err
-	}
-
 	if err := ResetFeeds(s, cmd); err != nil {
 		return err
 	}
+
+	if err := ResetUsers(s, cmd); err != nil {
+		return err
+	}	
 
 	return nil
 }

@@ -11,4 +11,4 @@ CREATE TABLE feeds(
 
 
 -- +goose Down
-drop table users;
+drop table feeds;

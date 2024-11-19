@@ -41,6 +41,8 @@ func main() {
 	commands.RegisterCommands("agg", cmds.Agg)
 	commands.RegisterCommands("addfeed", cmds.AddFeed)
 	commands.RegisterCommands("feeds", cmds.GetFeeds)
+	commands.RegisterCommands("follow", cmds.FollowFeed)
+	commands.RegisterCommands("following", cmds.GetFollowsForCurrentUser)
 
 	userInput := os.Args
 
