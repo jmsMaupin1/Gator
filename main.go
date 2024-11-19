@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"os"
@@ -10,6 +11,17 @@ import (
 	"github.com/jmsMaupin1/gator/internal/database"
 	_ "github.com/lib/pq"
 )
+
+func MiddlewareLoggedIn(handler func(s *cmds.State, cmd cmds.Command, user database.User) error) func(*cmds.State, cmds.Command) error {
+	return func(s *cmds.State, cmd cmds.Command) error {
+		user, err := s.DB.GetUserByName(context.Background(), s.CFG.CurrentUserName)
+		if err != nil {
+			return nil
+		}
+
+		return handler(s, cmd, user)
+	}
+}
 
 func main() {
 	cfg, err := config.Read()
@@ -39,10 +51,10 @@ func main() {
 	commands.RegisterCommands("reset", cmds.Reset)
 	commands.RegisterCommands("users", cmds.Users)
 	commands.RegisterCommands("agg", cmds.Agg)
-	commands.RegisterCommands("addfeed", cmds.AddFeed)
 	commands.RegisterCommands("feeds", cmds.GetFeeds)
-	commands.RegisterCommands("follow", cmds.FollowFeed)
-	commands.RegisterCommands("following", cmds.GetFollowsForCurrentUser)
+	commands.RegisterCommands("addfeed", MiddlewareLoggedIn(cmds.AddFeed))
+	commands.RegisterCommands("follow", MiddlewareLoggedIn(cmds.FollowFeed))
+	commands.RegisterCommands("following", MiddlewareLoggedIn(cmds.GetFollowsForCurrentUser))
 
 	userInput := os.Args
 

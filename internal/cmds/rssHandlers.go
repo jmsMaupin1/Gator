@@ -25,15 +25,10 @@ func Agg(_ *State, _ Command) error {
 	return nil
 }
 
-func AddFeed(s *State, cmd Command) error {
+func AddFeed(s *State, cmd Command, user database.User) error {
 	ctx := context.Background()
 	if len(cmd.Args) < 2 {
 		return fmt.Errorf("Not enough arguments expected name and url")
-	}
-
-	user, err := s.DB.GetUserByName(ctx, s.CFG.CurrentUserName)
-	if err != nil {
-		return err
 	}
 
 	u, err := url.ParseRequestURI(cmd.Args[1])
@@ -77,7 +72,7 @@ func GetFeeds(s *State, _ Command) error {
 	return nil
 }
 
-func FollowFeed(s *State, cmd Command) error {
+func FollowFeed(s *State, cmd Command, user database.User) error {
 	if len(cmd.Args) < 1 {
 		return fmt.Errorf("Expected url, no url was supplied")
 	}
@@ -89,15 +84,8 @@ func FollowFeed(s *State, cmd Command) error {
 		return err
 	}
 
-	user, err := s.DB.GetUserByName(ctx, s.CFG.CurrentUserName)
-	if err != nil {
-		return err
-	}
-
-	uuid := uuid.New()
-
 	feed_follows, err := s.DB.CreateFeedFollow(ctx, database.CreateFeedFollowParams{
-		ID: int32(uuid.ID()),
+		ID: int32(uuid.New().ID()),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		UserID: user.ID,
@@ -115,13 +103,8 @@ func FollowFeed(s *State, cmd Command) error {
 }
 
 
-func GetFollowsForCurrentUser(s *State, cmd Command) error {
+func GetFollowsForCurrentUser(s *State, cmd Command, user database.User) error {
 	ctx := context.Background()
-
-	user, err := s.DB.GetUserByName(ctx, s.CFG.CurrentUserName)
-	if err != nil {
-		return err
-	}
 
 	feed_follows, err := s.DB.GetFeedsFollowedByUser(ctx, user.ID)
 	if err != nil {
