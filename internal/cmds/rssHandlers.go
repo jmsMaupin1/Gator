@@ -8,21 +8,27 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jmsMaupin1/gator/internal/database"
-	"github.com/jmsMaupin1/gator/internal/rss"
 )
 
-func Agg(_ *State, _ Command) error {
-	feedURL := "https://www.wagslane.dev/index.xml"
+func Agg(s *State, cmd Command) error {
+	if len(cmd.Args) < 1 {
+		return fmt.Errorf("Expected time between requests")
+	}
 
-	c := rss.NewClient()
-	feed, err := c.FetchFeed(context.Background(), feedURL)
+	dur, err := time.ParseDuration(cmd.Args[0])
 	if err != nil {
 		return err
 	}
+	
+	fmt.Println(fmt.Sprintf("Collecting feed every %v", dur))
 
-	fmt.Println(feed)
-
-	return nil
+	ticker := time.NewTicker(dur)
+	for ;; <-ticker.C {
+		err := ScrapeFeeds(s)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 }
 
 func AddFeed(s *State, cmd Command, user database.User) error {

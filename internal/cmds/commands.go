@@ -1,10 +1,12 @@
 package cmds
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/jmsMaupin1/gator/internal/config"
 	"github.com/jmsMaupin1/gator/internal/database"
+	"github.com/jmsMaupin1/gator/internal/rss"
 )
 
 type State struct {
@@ -34,6 +36,33 @@ func (c *Commands) Run(state *State, cmd Command) error {
 
 	if err := f(state, cmd); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func ScrapeFeeds(s *State) error {
+	ctx := context.Background()
+	c := rss.NewClient()
+
+	nextFeed, err := s.DB.GetNextFeedToFetch(ctx)
+	if err != nil {
+		return err
+	}
+
+	if err := s.DB.MarkFeedFetched(ctx, nextFeed.ID); err != nil {
+		return err
+	}
+
+	feed, err := c.FetchFeed(ctx, nextFeed.Url)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(feed.Channel.Item)
+
+	for _, item := range feed.Channel.Item {
+		fmt.Println(item.Title)
 	}
 
 	return nil
