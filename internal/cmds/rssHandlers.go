@@ -12,7 +12,7 @@ import (
 
 func Agg(s *State, cmd Command) error {
 	if len(cmd.Args) < 1 {
-		return fmt.Errorf("Expected time between requests")
+		return fmt.Errorf("Usage: agg <time>")
 	}
 
 	dur, err := time.ParseDuration(cmd.Args[0])
@@ -34,7 +34,7 @@ func Agg(s *State, cmd Command) error {
 func AddFeed(s *State, cmd Command, user database.User) error {
 	ctx := context.Background()
 	if len(cmd.Args) < 2 {
-		return fmt.Errorf("Not enough arguments expected name and url")
+		return fmt.Errorf("Usage: addfeed <feed_name> <feed_url>")
 	}
 
 	u, err := url.ParseRequestURI(cmd.Args[1])
@@ -43,7 +43,7 @@ func AddFeed(s *State, cmd Command, user database.User) error {
 	}
 
 	f, err := s.DB.CreateFeed(context.Background(), database.CreateFeedParams{
-		ID: int32(uuid.New().ID()),
+		ID: uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		Name: cmd.Args[0],
@@ -55,7 +55,7 @@ func AddFeed(s *State, cmd Command, user database.User) error {
 	}
 
 	feed, err := s.DB.CreateFeedFollow(ctx, database.CreateFeedFollowParams{
-		ID: int32(uuid.New().ID()),
+		ID: uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		UserID: user.ID,
@@ -80,7 +80,7 @@ func GetFeeds(s *State, _ Command) error {
 
 func FollowFeed(s *State, cmd Command, user database.User) error {
 	if len(cmd.Args) < 1 {
-		return fmt.Errorf("Expected url, no url was supplied")
+		return fmt.Errorf("Usage: follow <feed url>")
 	}
 
 	ctx := context.Background()
@@ -91,7 +91,7 @@ func FollowFeed(s *State, cmd Command, user database.User) error {
 	}
 
 	feed_follows, err := s.DB.CreateFeedFollow(ctx, database.CreateFeedFollowParams{
-		ID: int32(uuid.New().ID()),
+		ID: uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		UserID: user.ID,

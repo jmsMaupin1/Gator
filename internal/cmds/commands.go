@@ -3,7 +3,10 @@ package cmds
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/jmsMaupin1/gator/internal/config"
 	"github.com/jmsMaupin1/gator/internal/database"
 	"github.com/jmsMaupin1/gator/internal/rss"
@@ -59,10 +62,31 @@ func ScrapeFeeds(s *State) error {
 		return err
 	}
 
-	fmt.Println(feed.Channel.Item)
-
+	fmt.Println(fmt.Sprintf("Creating post for feed: %s", nextFeed.Name))
 	for _, item := range feed.Channel.Item {
-		fmt.Println(item.Title)
+		pubdate, err := time.Parse(time.RFC1123Z, item.PubDate)
+		if err != nil {
+			return fmt.Errorf("Feed: %v, %v", nextFeed.Name, err)
+		}
+
+		_, err = s.DB.CreatePost(ctx, database.CreatePostParams{
+			ID: uuid.New(),
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+			Title: item.Title,
+			Url: item.Link,
+			Description: item.Description,
+			PublishedAt: pubdate,
+			FeedID: nextFeed.ID,
+		})
+
+		if err != nil {
+			if strings.Contains(err.Error(), "duplicate key value") {
+				continue
+			}
+
+			return fmt.Errorf("Create Post Error: %v", err.Error())
+		}
 	}
 
 	return nil

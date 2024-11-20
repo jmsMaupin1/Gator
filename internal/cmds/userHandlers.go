@@ -11,7 +11,7 @@ import (
 
 func Login(s *State, cmd Command) error {
 	if len(cmd.Args) == 0 {
-		return fmt.Errorf("Expected username, no username supplied")
+		return fmt.Errorf("Usage: login <username>")
 	}
 
 	user, err := s.DB.GetUserByName(context.Background(), cmd.Args[0])
@@ -30,20 +30,18 @@ func Login(s *State, cmd Command) error {
 
 func Register(s *State, cmd Command) error {
 	if len(cmd.Args) < 1 {
-		return fmt.Errorf("Error: Expeted username, no username supplied")
+		return fmt.Errorf("Usage: register <username>")
 	}
 	
-	uuid := uuid.New()
-
 	user, err := s.DB.CreateUser(context.Background(), database.CreateUserParams{
-		ID: int32(uuid.ID()),
+		ID: uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		Name: cmd.Args[0],
 	})
 
 	if err != nil {
-		return fmt.Errorf("Username already exists: %v", err)
+		return fmt.Errorf("Username creation error: %v", err)
 	}
 
 	fmt.Println(fmt.Sprintf("user: %v", user))

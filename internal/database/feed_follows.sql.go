@@ -8,6 +8,8 @@ package database
 import (
 	"context"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const createFeedFollow = `-- name: CreateFeedFollow :one
@@ -32,19 +34,19 @@ INNER JOIN users u on u.id = inserted_feed_follows.user_id
 `
 
 type CreateFeedFollowParams struct {
-	ID        int32
+	ID        uuid.UUID
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	UserID    int32
-	FeedID    int32
+	UserID    uuid.UUID
+	FeedID    uuid.UUID
 }
 
 type CreateFeedFollowRow struct {
-	ID        int32
+	ID        uuid.UUID
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	UserID    int32
-	FeedID    int32
+	UserID    uuid.UUID
+	FeedID    uuid.UUID
 	FeedName  string
 	UserName  string
 }
@@ -76,8 +78,8 @@ WHERE feed_id = $1 AND user_id = $2
 `
 
 type DeleteFeedFollowRecordParams struct {
-	FeedID int32
-	UserID int32
+	FeedID uuid.UUID
+	UserID uuid.UUID
 }
 
 func (q *Queries) DeleteFeedFollowRecord(ctx context.Context, arg DeleteFeedFollowRecordParams) error {
@@ -100,7 +102,7 @@ type GetFeedsFollowedByUserRow struct {
 	UserName string
 }
 
-func (q *Queries) GetFeedsFollowedByUser(ctx context.Context, userID int32) ([]GetFeedsFollowedByUserRow, error) {
+func (q *Queries) GetFeedsFollowedByUser(ctx context.Context, userID uuid.UUID) ([]GetFeedsFollowedByUserRow, error) {
 	rows, err := q.db.QueryContext(ctx, getFeedsFollowedByUser, userID)
 	if err != nil {
 		return nil, err
