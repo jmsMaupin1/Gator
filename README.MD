@@ -2,7 +2,7 @@
 <img src="assets/gator_logo.webp" width="200"/>
 </p>
 
-# Gator
+# gator
 
 A multi-user command line tool for aggregating RSS feeds and browsing posts
 
